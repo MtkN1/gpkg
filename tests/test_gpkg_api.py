@@ -70,7 +70,5 @@ def test_bat(tmp_path: Path) -> None:
     bat.install("v0.24.0", prefix=tmp_path)
 
     assert (tmp_path / "bin" / "bat").exists()
-    assert (
-        tmp_path / "share" / "bash-completion" / "completions" / "bat.bash"
-    ).exists()
+    assert (tmp_path / "share" / "bash-completion" / "completions" / "bat").exists()
     assert (tmp_path / "share" / "man" / "man1" / "bat.1").exists()

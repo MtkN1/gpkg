@@ -63,5 +63,5 @@ class Bat(Package):
 
             installer = Installer(prefix=prefix)
             installer.install_bin(bin_path)
-            installer.install_completion(complete_path)
+            installer.install_completion(complete_path, "bat")
             installer.install_man(man_path)

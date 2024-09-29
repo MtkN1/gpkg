@@ -20,8 +20,10 @@ class Installer:
         local_bin_path = Path("bin")
         self._install(bin_path, local_bin_path)
 
-    def install_completion(self, completion_path: Path) -> None:
-        local_completion_path = Path("share", "bash-completion", "completions")
+    def install_completion(self, completion_path: Path, filename: str) -> None:
+        local_completion_path = Path(
+            "share", "bash-completion", "completions", filename
+        )
         self._install(completion_path, local_completion_path)
 
     def install_man(self, man_path: Path) -> None:

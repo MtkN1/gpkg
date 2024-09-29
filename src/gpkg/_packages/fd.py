@@ -58,10 +58,10 @@ class Fd(Package):
                 tempdir, f"fd-{tag_name}-{machine}-unknown-linux-{libcname}"
             )
             bin_path = extracted_path / "fd"
-            complete_path = extracted_path / "autocomplete" / "fd.bash"
+            complete_path = extracted_path / "autocomplete" / "fd"
             man_path = extracted_path / "fd.1"
 
             installer = Installer(prefix=prefix)
             installer.install_bin(bin_path)
-            installer.install_completion(complete_path)
+            installer.install_completion(complete_path, "fd")
             installer.install_man(man_path)

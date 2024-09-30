@@ -1,9 +1,46 @@
 import shutil
+from abc import ABC, abstractmethod
 from pathlib import Path
-from typing import Protocol
+
+from gpkg._platform import get_libcname, get_machine
 
 
-class Package(Protocol):
+class Package(ABC):
+    @property
+    @abstractmethod
+    def owner(self) -> str: ...
+
+    @property
+    @abstractmethod
+    def repo(self) -> str: ...
+
+    @property
+    def machine_map(self) -> dict[str, str]:
+        return {}
+
+    @property
+    def machine(self) -> str:
+        machine_map = self.machine_map
+
+        machine = get_machine()
+        if machine not in machine_map:
+            raise ValueError(f"Unsupported machine: {machine}")
+        return machine_map[machine]
+
+    @property
+    def libcname_map(self) -> dict[str, str]:
+        return {}
+
+    @property
+    def libcname(self) -> str:
+        libcname_map = self.libcname_map
+
+        libcname = get_libcname()
+        if libcname not in libcname_map:
+            raise ValueError(f"Unsupported C library: {libcname}")
+        return libcname_map[libcname]
+
+    @abstractmethod
     def install(self, tag_name: str, *, prefix: Path) -> None: ...
 
 

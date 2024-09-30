@@ -58,7 +58,7 @@ class Fd(Package):
                 tempdir, f"fd-{tag_name}-{machine}-unknown-linux-{libcname}"
             )
             bin_path = extracted_path / "fd"
-            complete_path = extracted_path / "autocomplete" / "fd"
+            complete_path = extracted_path / "autocomplete" / "fd.bash"
             man_path = extracted_path / "fd.1"
 
             installer = Installer(prefix=prefix)

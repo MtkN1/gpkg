@@ -13,11 +13,11 @@ class Installer:
 
     def _install(self, src: Path, dst: Path) -> None:
         dst = self._prefix / dst
-        dst.mkdir(parents=True, exist_ok=True)
+        dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copy2(src, dst)
 
     def install_bin(self, bin_path: Path) -> None:
-        local_bin_path = Path("bin")
+        local_bin_path = Path("bin") / bin_path.name
         self._install(bin_path, local_bin_path)
 
     def install_completion(self, completion_path: Path, filename: str) -> None:
@@ -27,5 +27,5 @@ class Installer:
         self._install(completion_path, local_completion_path)
 
     def install_man(self, man_path: Path) -> None:
-        local_man_path = Path("share", "man", "man1")
+        local_man_path = Path("share", "man", "man1") / man_path.name
         self._install(man_path, local_man_path)

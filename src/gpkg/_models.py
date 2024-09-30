@@ -1,19 +1,12 @@
-from typing import Protocol
+from typing import NamedTuple
 
-from pydantic import BaseModel
-
-type Storage = dict[str, str]
+type StorageType = dict[str, str]
 
 
-class Release(Protocol):
-    tag_name: str
-
-
-class PackageInfo(BaseModel, frozen=True):
+class PackageInfo(NamedTuple):
     owner: str
     repo: str
 
 
-class Status(BaseModel, frozen=True):
-    version: str
-    installed: bool
+class Status(NamedTuple):
+    tag_name: str

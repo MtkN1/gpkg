@@ -1,90 +1,63 @@
-import json
-from collections.abc import Callable
+from __future__ import annotations
+
 from pathlib import Path
+from typing import TYPE_CHECKING, Any
 
-from githubkit import GitHub, UnauthAuthStrategy
-
-from gpkg._models import PackageInfo, Release, Status, Storage
+from gpkg._models import PackageInfo, Status
 from gpkg._registry import Registry
+from gpkg._storage import Storage
+
+if TYPE_CHECKING:
+    from githubkit import GitHub
 
 
-def show(package: PackageInfo, *, storage_factory: Callable[..., Storage]) -> Status:
+def show(package_info: PackageInfo, *, storage: Storage) -> Status:
     """Retrive local package status."""
-    storage = storage_factory()
-    owner_repo = f"{package.owner}/{package.repo}"
-    version = storage.get(owner_repo, "")
-    return Status(version=version, installed=bool(version))
+
+    tag_name = storage.get(package_info)
+    return Status(tag_name=tag_name)
 
 
-def fetch(
-    package: PackageInfo, *, release_factory: Callable[[str, str], Release]
-) -> Release:
+def fetch(package_info: PackageInfo, *, github: GitHub[Any]) -> str:
     """Fetch latest tag name from GitHub Releases."""
-    return release_factory(package.owner, package.repo)
+
+    response = github.rest.repos.get_latest_release(
+        package_info.owner, package_info.repo
+    )
+    return response.parsed_data.tag_name
 
 
-def install(*packages: PackageInfo, prefix: Path) -> None:
+def install(*seq_package_info: PackageInfo, prefix: Path, github: GitHub[Any]) -> None:
     """Install packages."""
-    if not packages:
-        packages = tuple(Registry.list())
 
-    github = GitHub(auth=UnauthAuthStrategy())
+    if not seq_package_info:
+        seq_package_info = tuple(Registry.list())
 
-    def get_latest_release(owner: str, repo: str) -> Release:
-        nonlocal github
-        return github.rest.repos.get_latest_release(owner, repo).parsed_data
+    storage = Storage.load(prefix=prefix)
 
-    storage = load(prefix=prefix)
-
-    for package_info in packages:
-        if f"{package_info.owner}/{package_info.repo}" in storage:
+    for package_info in seq_package_info:
+        if storage.get(package_info):
             continue
-        tag_name = fetch(package_info, release_factory=get_latest_release)
+
+        tag_name = fetch(package_info, github=github)
+
         package = Registry.get(package_info)()
-        package.install(tag_name.tag_name, prefix=prefix)
-        storage[f"{package_info.owner}/{package_info.repo}"] = tag_name.tag_name
+        package.install(tag_name, prefix=prefix)
 
-    save(storage, prefix=prefix)
+        storage.add(package_info, tag_name)
 
 
-def upgrade(*, prefix: Path) -> None:
+def upgrade(*, prefix: Path, github: GitHub[Any]) -> None:
     """Upgrade installed packages."""
-    github = GitHub(auth=UnauthAuthStrategy())
 
-    def get_latest_release(owner: str, repo: str) -> Release:
-        nonlocal github
-        return github.rest.repos.get_latest_release(owner, repo).parsed_data
+    storage = Storage.load(prefix=prefix)
 
-    storage = load(prefix=prefix)
-
-    for owner_repo, tag_name in storage.items():
-        owner, repo = owner_repo.split("/")
-        package_info = PackageInfo(owner=owner, repo=repo)
-        tag_name = fetch(package_info, release_factory=get_latest_release)
-        if tag_name.tag_name == storage[owner_repo]:
+    for package_info in storage.list():
+        tag_name = fetch(package_info, github=github)
+        if tag_name == storage.get(package_info):
             continue
+
         package = Registry.get(package_info)()
-        package.install(tag_name.tag_name, prefix=prefix)
-        storage[owner_repo] = tag_name.tag_name
+        package.install(tag_name, prefix=prefix)
 
-    save(storage, prefix=prefix)
-
-
-def load(*, prefix: Path) -> Storage:
-    """Load storage."""
-    storage_path = prefix / Path("share", "gpkg", "storage.json")
-
-    if storage_path.exists():
-        with storage_path.open("r", encoding="utf-8") as fp:
-            return json.load(fp)
-    else:
-        return {}
-
-
-def save(storage: Storage, *, prefix: Path) -> None:
-    """Save storage."""
-    storage_path = prefix / Path("share", "gpkg", "storage.json")
-    storage_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with storage_path.open("w", encoding="utf-8") as fp:
-        json.dump(storage, fp)
+        storage.add(package_info, tag_name)

@@ -46,10 +46,12 @@ class Yq(Package):
             bin_path = Path(tempdir, command)
 
             with bin_path.open("wb") as executable:
-                if chunk := response.read(1024):
+                while chunk := response.read(1024):
                     executable.write(chunk)
 
-            bin_path.chmod(bin_path.stat().st_mode | stat.S_IEXEC)
+            bin_path.chmod(
+                bin_path.stat().st_mode | stat.S_IXUSR | stat.S_IXGRP | stat.S_IXOTH
+            )
 
             installer = Installer(prefix=prefix)
             installer.install_bin(bin_path)

@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-import os
+import stat
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -165,7 +165,7 @@ def test_install_jq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
 
     bin_path = tmp_path / "bin" / "jq"
     assert bin_path.exists()
-    assert os.access(bin_path, os.X_OK)
+    assert stat.S_IMODE(bin_path.stat().st_mode) == 0o755
 
 
 def test_install_yq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
@@ -176,7 +176,7 @@ def test_install_yq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
 
     bin_path = tmp_path / "bin" / "yq"
     assert bin_path.exists()
-    assert os.access(bin_path, os.X_OK)
+    assert stat.S_IMODE(bin_path.stat().st_mode) == 0o755
 
 
 def test_upgrade(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:

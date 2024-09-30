@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import os
 from pathlib import Path
 from typing import TYPE_CHECKING
 
@@ -42,18 +43,140 @@ def test_fetch(github: GitHub[UnauthAuthStrategy]) -> None:
     assert tag_name == "v0.24.0" or tag_name >= "v0.24.0"
 
 
-def test_install(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
-    bat_pkg = gpkg.PackageInfo(owner="sharkdp", repo="bat")
+def test_install_bat(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="sharkdp", repo="bat")
 
     # FIXME: It uses a real API and should be mocked
-    gpkg.install(bat_pkg, prefix=tmp_path, github=github)
+    gpkg.install(package_info, prefix=tmp_path, github=github)
 
     bin_path = tmp_path / "bin" / "bat"
     completion_path = tmp_path / "share" / "bash-completion" / "completions" / "bat"
     man_path = tmp_path / "share" / "man" / "man1" / "bat.1"
-    assert (bin_path).exists()
-    assert (completion_path).exists()
-    assert (man_path).exists()
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_fd(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="sharkdp", repo="fd")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "fd"
+    completion_path = tmp_path / "share" / "bash-completion" / "completions" / "fd"
+    man_path = tmp_path / "share" / "man" / "man1" / "fd.1"
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_eza(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="eza-community", repo="eza")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "eza"
+    completion_path = tmp_path / "share" / "bash-completion" / "completions" / "eza"
+    man_path = tmp_path / "share" / "man" / "man1" / "eza.1"
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_ripgrep(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="BurntSushi", repo="ripgrep")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "rg"
+    completion_path = tmp_path / "share" / "bash-completion" / "completions" / "rg"
+    man_path = tmp_path / "share" / "man" / "man1" / "rg.1"
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_lsd(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="lsd-rs", repo="lsd")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "lsd"
+    completion_path = tmp_path / "share" / "bash-completion" / "completions" / "lsd"
+    man_path = tmp_path / "share" / "man" / "man1" / "lsd.1"
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_xh(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="ducaale", repo="xh")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "xh"
+    completion_path = tmp_path / "share" / "bash-completion" / "completions" / "xh"
+    man_path = tmp_path / "share" / "man" / "man1" / "xh.1"
+    assert bin_path.exists()
+    assert completion_path.exists()
+    assert man_path.exists()
+
+
+def test_install_starship(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="starship", repo="starship")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "starship"
+    completion_path = (
+        tmp_path / "share" / "bash-completion" / "completions" / "starship"
+    )
+    assert bin_path.exists()
+    assert completion_path.exists()
+
+
+def test_install_uv(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="astral-sh", repo="uv")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    uv_bin_path = tmp_path / "bin" / "uv"
+    uvx_bin_path = tmp_path / "bin" / "uvx"
+    uv_completion_path = tmp_path / "share" / "bash-completion" / "completions" / "uv"
+    uvx_completion_path = tmp_path / "share" / "bash-completion" / "completions" / "uvx"
+    assert uv_bin_path.exists()
+    assert uv_completion_path.exists()
+    assert uvx_bin_path.exists()
+    assert uvx_completion_path.exists()
+
+
+def test_install_jq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="jqlang", repo="jq")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "jq"
+    assert bin_path.exists()
+    assert os.access(bin_path, os.X_OK)
+
+
+def test_install_yq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
+    package_info = gpkg.PackageInfo(owner="mikefarah", repo="yq")
+
+    # FIXME: It uses a real API and should be mocked
+    gpkg.install(package_info, prefix=tmp_path, github=github)
+
+    bin_path = tmp_path / "bin" / "yq"
+    assert bin_path.exists()
+    assert os.access(bin_path, os.X_OK)
 
 
 def test_upgrade(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:

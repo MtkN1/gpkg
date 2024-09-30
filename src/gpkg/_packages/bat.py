@@ -4,7 +4,6 @@ from tempfile import TemporaryDirectory
 from urllib.request import urlopen
 
 from gpkg._package import Installer, Package
-from gpkg._platform import get_libcname, get_machine
 
 
 class Bat(Package):
@@ -17,26 +16,16 @@ class Bat(Package):
         return "bat"
 
     @property
-    def machine(self) -> str:
-        machine_map = {
+    def machine_map(self) -> dict[str, str]:
+        return {
             "x86_64": "x86_64",
         }
 
-        machine = get_machine()
-        if machine not in machine_map:
-            raise ValueError(f"Unsupported machine: {machine}")
-        return machine_map[machine]
-
     @property
-    def libcname(self) -> str:
-        libcname_map = {
+    def libcname_map(self) -> dict[str, str]:
+        return {
             "glibc": "gnu",
         }
-
-        libcname = get_libcname()
-        if libcname not in libcname_map:
-            raise ValueError(f"Unsupported C library: {libcname}")
-        return libcname_map[libcname]
 
     def install(self, tag_name: str, *, prefix: Path) -> None:
         # e.g. https://github.com/sharkdp/bat/releases/download/v0.24.0/bat-v0.24.0-x86_64-unknown-linux-gnu.tar.gz

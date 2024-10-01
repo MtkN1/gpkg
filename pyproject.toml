@@ -9,7 +9,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gpkg = "gpkg:cli"
+gpkg = "gpkg.cli:cli"
 
 [build-system]
 requires = ["hatchling"]

@@ -19,21 +19,24 @@ jobs:
       - name: Build Python distribution
         run: uv build --wheel
 
-      - name: Build PyApp distribution
-        run: |
-          curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
-          cd pyapp-v0.23.0
+      - name: Download PyApp source code
+        working-directory: $RUNNER_TEMP
+        run: curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
 
-          export PYAPP_PROJECT_NAME=gpkg
-          export PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl")
-          export PYAPP_DISTRIBUTION_EMBED=true
-          export PYAPP_UV_ENABLED=true
+      - name: Build PyApp distribution
+        working-directory: $RUNNER_TEMP/pyapp-v0.23.0
+        run: |
+          PYAPP_PROJECT_NAME=gpkg \
+          PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl") \
+          PYAPP_DISTRIBUTION_EMBED=true \
+          PYAPP_UV_ENABLED=true \
           cargo build --release
 
-          mv target/release/pyapp "$GITHUB_WORKSPACE/dist/gpkg"
+          mv target/release/pyapp gpkg
+          tar -cf gpkg.tar.gz gpkg
 
       - name: Upload distribution
         uses: actions/upload-artifact@v4
         with:
           name: gpkg
-          path: dist/gpkg
+          path: $RUNNER_TEMP/pyapp-v0.23.0/gpkg.tar.gz

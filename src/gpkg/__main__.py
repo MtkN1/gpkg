@@ -1,3 +1,3 @@
-from gpkg.cli import cli
+from gpkg.cli import app
 
-cli()
+app()

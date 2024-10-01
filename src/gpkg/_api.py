@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import builtins
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -16,6 +17,12 @@ def show(package_info: PackageInfo, *, storage: Storage) -> Status:
 
     tag_name = storage.get(package_info)
     return Status(tag_name=tag_name)
+
+
+def list() -> builtins.list[PackageInfo]:
+    """List all packages."""
+
+    return Registry.list()
 
 
 def fetch(package_info: PackageInfo, *, github: GitHub[Any]) -> str:

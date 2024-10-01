@@ -6,10 +6,12 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "githubkit>=0.11",
+    "rich>=13.8",
+    "typer>=0.12",
 ]
 
 [project.scripts]
-gpkg = "gpkg.cli:cli"
+gpkg = "gpkg.cli:app"
 
 [build-system]
 requires = ["hatchling"]

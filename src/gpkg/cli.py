@@ -1,38 +1,78 @@
-import argparse
+import builtins
 from pathlib import Path
+from typing import Annotated
 
+import typer
 from githubkit import GitHub, UnauthAuthStrategy
+from rich.console import Console
+from rich.table import Table
 
-from gpkg._api import install, upgrade
-from gpkg._utils import separate_owner_repo
+import gpkg
+
+__all__ = ["app"]
+
+app = typer.Typer()
+console = Console()
 
 
-def cli() -> None:
-    """Command-line interface.
+@app.command()
+def list() -> None:
+    """List all packages in gpkg registry."""
+    packages = gpkg.list()
+    packages_json = [gpkg.concat_owner_repo(x) for x in packages]
+    console.print_json(data=packages_json)
 
-    Examples:
-    gpkg install sharkdp/bat
-    gpkg install sharkdp/bat sharkdp/fd
 
-    gpkg upgrade
-    """
-    parser = argparse.ArgumentParser(description="gpkg")
-    parser.add_argument("--prefix", type=Path, default=Path.home() / ".local")
-    subparsers = parser.add_subparsers(dest="command")
+@app.command()
+def install(
+    packages: Annotated[builtins.list[str] | None, typer.Argument()] = None,
+) -> None:
+    """Install packages."""
+    if packages is None:
+        if typer.confirm("Do you want to install all packages?"):
+            target_packages = gpkg.list()
+        else:
+            raise typer.Abort()
+    else:
+        target_packages = [gpkg.separate_owner_repo(x) for x in packages]
 
-    install_parser = subparsers.add_parser("install")
-    install_parser.add_argument("packages", nargs="*", type=separate_owner_repo)
-
-    subparsers.add_parser("upgrade")
-
-    args = parser.parse_args()
-
+    prefix = Path.home() / ".local"
     with GitHub(UnauthAuthStrategy()) as github:
-        if args.command == "install":
-            if args.packages:
-                install(*args.packages, prefix=args.prefix, github=github)
-            else:
-                install(prefix=args.prefix, github=github)
+        for package_info in target_packages:
+            # TODO: Show installation progress
+            console.print(f"Installing {gpkg.concat_owner_repo(package_info)} ...")
+            gpkg.install(package_info, prefix=prefix, github=github)
 
-        elif args.command == "upgrade":
-            upgrade(prefix=args.prefix, github=github)
+
+@app.command()
+def upgrade() -> None:
+    """Upgrade installed packages."""
+    prefix = Path.home() / ".local"
+    with GitHub(UnauthAuthStrategy()) as github:
+        # TODO: Show upgrade progress
+        console.print("Upgrading installed packages ...")
+        gpkg.upgrade(prefix=prefix, github=github)
+
+
+@app.command()
+def show(
+    package: Annotated[str | None, typer.Argument()] = None,
+) -> None:
+    """Show package status."""
+    storage = gpkg.Storage(prefix=Path.home() / ".local")
+
+    table = Table(title="Installed Packages")
+    table.add_column("Package")
+    table.add_column("Tag name")
+
+    if package is not None:
+        target_packages = [gpkg.separate_owner_repo(package)]
+    else:
+        target_packages = gpkg.list()
+
+    for package_info in target_packages:
+        status = gpkg.show(package_info, storage=storage)
+        owner_repo = gpkg.concat_owner_repo(package_info)
+        table.add_row(owner_repo, status.tag_name or "NOT INSTALLED")
+
+    console.print(table)

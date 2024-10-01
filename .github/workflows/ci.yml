@@ -20,11 +20,11 @@ jobs:
         run: uv build --wheel
 
       - name: Download PyApp source code
-        working-directory: $RUNNER_TEMP
+        working-directory: ${{ runner.temp }}
         run: curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
 
       - name: Build PyApp distribution
-        working-directory: $RUNNER_TEMP/pyapp-v0.23.0
+        working-directory: ${{ runner.temp }}/pyapp-v0.23.0
         run: |
           PYAPP_PROJECT_NAME=gpkg \
           PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl") \
@@ -39,4 +39,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gpkg
-          path: $RUNNER_TEMP/pyapp-v0.23.0/gpkg.tar.gz
+          path: ${{ runner.temp }}/pyapp-v0.23.0/gpkg.tar.gz

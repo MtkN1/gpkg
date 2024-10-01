@@ -24,7 +24,7 @@ jobs:
 
       - name: Download PyApp source code
         working-directory: ${{ runner.temp }}
-        run: curl -fL https://github.com/ofek/pyapp/releases/download/${{ env.PYAPP_VERSION }}/source.tar.gz | tar -xz
+        run: curl -fL "https://github.com/ofek/pyapp/releases/download/$PYAPP_VERSION/source.tar.gz" | tar -xz
 
       - name: Build PyApp distribution
         working-directory: ${{ runner.temp }}/pyapp-${{ env.PYAPP_VERSION }}

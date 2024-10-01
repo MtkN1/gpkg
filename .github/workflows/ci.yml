@@ -1,0 +1,38 @@
+name: Build
+
+on: push
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v2
+
+      - name: Build Python distribution
+        run: uv build --wheel
+
+      - name: Build PyApp distribution
+        run: |
+          curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
+          cd pyapp-v0.23.0
+
+          export PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl")
+          export PYAPP_DISTRIBUTION_EMBED=true
+          export PYAPP_UV_ENABLED=true
+          cargo build --release
+
+          mv target/release/pyapp "$GITHUB_WORKSPACE/dist/gpkg"
+
+      - name: Upload distribution
+        uses: actions/upload-artifact@v4
+        with:
+          name: gpkg
+          path: dist/gpkg

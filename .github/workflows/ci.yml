@@ -2,6 +2,9 @@ name: Build
 
 on: push
 
+env:
+  PYAPP_VERSION: v0.23.0
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,10 +24,10 @@ jobs:
 
       - name: Download PyApp source code
         working-directory: ${{ runner.temp }}
-        run: curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
+        run: curl -fL https://github.com/ofek/pyapp/releases/download/${{ env.PYAPP_VERSION }}/source.tar.gz | tar -xz
 
       - name: Build PyApp distribution
-        working-directory: ${{ runner.temp }}/pyapp-v0.23.0
+        working-directory: ${{ runner.temp }}/pyapp-${{ env.PYAPP_VERSION }}
         run: |
           PYAPP_PROJECT_NAME=gpkg \
           PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl") \
@@ -39,4 +42,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: gpkg
-          path: ${{ runner.temp }}/pyapp-v0.23.0/gpkg.tar.gz
+          path: ${{ runner.temp }}/pyapp-${{ env.PYAPP_VERSION }}/gpkg.tar.gz

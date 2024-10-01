@@ -24,6 +24,7 @@ jobs:
           curl -fL https://github.com/ofek/pyapp/releases/download/v0.23.0/source.tar.gz | tar -xz
           cd pyapp-v0.23.0
 
+          export PYAPP_PROJECT_NAME=gpkg
           export PYAPP_PROJECT_PATH=$(find "$GITHUB_WORKSPACE" -type f -name "*.whl")
           export PYAPP_DISTRIBUTION_EMBED=true
           export PYAPP_UV_ENABLED=true

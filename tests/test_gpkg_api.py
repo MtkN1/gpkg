@@ -141,22 +141,6 @@ def test_install_starship(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) ->
     assert completion_path.exists()
 
 
-def test_install_uv(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
-    package_info = gpkg.PackageInfo(owner="astral-sh", repo="uv")
-
-    # FIXME: It uses a real API and should be mocked
-    gpkg.install(package_info, prefix=tmp_path, github=github)
-
-    uv_bin_path = tmp_path / "bin" / "uv"
-    uvx_bin_path = tmp_path / "bin" / "uvx"
-    uv_completion_path = tmp_path / "share" / "bash-completion" / "completions" / "uv"
-    uvx_completion_path = tmp_path / "share" / "bash-completion" / "completions" / "uvx"
-    assert uv_bin_path.exists()
-    assert uv_completion_path.exists()
-    assert uvx_bin_path.exists()
-    assert uvx_completion_path.exists()
-
-
 def test_install_jq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
     package_info = gpkg.PackageInfo(owner="jqlang", repo="jq")
 

@@ -9,7 +9,6 @@ from gpkg._packages.jq import Jq
 from gpkg._packages.lsd import Lsd
 from gpkg._packages.ripgrep import Ripgrep
 from gpkg._packages.starship import Starship
-from gpkg._packages.uv import Uv
 from gpkg._packages.xh import Xh
 from gpkg._packages.yq import Yq
 
@@ -23,7 +22,6 @@ class Registry:
         PackageInfo(owner="lsd-rs", repo="lsd"): Lsd,
         PackageInfo(owner="ducaale", repo="xh"): Xh,
         PackageInfo(owner="starship", repo="starship"): Starship,
-        PackageInfo(owner="astral-sh", repo="uv"): Uv,
         PackageInfo(owner="jqlang", repo="jq"): Jq,
         PackageInfo(owner="mikefarah", repo="yq"): Yq,
     }

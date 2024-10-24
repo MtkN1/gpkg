@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import builtins
+from collections.abc import Generator
 from pathlib import Path
 from typing import TYPE_CHECKING, Any
 
@@ -54,17 +55,21 @@ def install(*seq_package_info: PackageInfo, prefix: Path, github: GitHub[Any]) -
         storage.add(package_info, tag_name)
 
 
-def upgrade(*, prefix: Path, github: GitHub[Any]) -> None:
+def upgrade(*, prefix: Path, github: GitHub[Any]) -> Generator[tuple[PackageInfo, str, str], None, None]:
     """Upgrade installed packages."""
 
     storage = Storage.load(prefix=prefix)
 
     for package_info in storage.list():
-        tag_name = fetch(package_info, github=github)
-        if tag_name == storage.get(package_info):
+        current_tag_name = storage.get(package_info)
+        latest_tag_name = fetch(package_info, github=github)
+        if current_tag_name == latest_tag_name:
             continue
 
         package = Registry.get(package_info)()
-        package.install(tag_name, prefix=prefix)
+        package.install(latest_tag_name, prefix=prefix)
 
-        storage.add(package_info, tag_name)
+        storage.add(package_info, latest_tag_name)
+
+        yield package_info, current_tag_name, latest_tag_name
+

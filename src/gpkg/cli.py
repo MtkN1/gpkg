@@ -49,9 +49,14 @@ def upgrade() -> None:
     """Upgrade installed packages."""
     prefix = Path.home() / ".local"
     with GitHub(UnauthAuthStrategy()) as github:
-        # TODO: Show upgrade progress
         console.print("Upgrading installed packages ...")
-        gpkg.upgrade(prefix=prefix, github=github)
+
+        for package_info, current_tag_name, latest_tag_name in gpkg.upgrade(
+            prefix=prefix, github=github
+        ):
+            console.print(
+                f"{gpkg.concat_owner_repo(package_info)}: {current_tag_name} -> {latest_tag_name}"
+            )
 
 
 @app.command()

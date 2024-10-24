@@ -165,4 +165,4 @@ def test_install_yq(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
 
 def test_upgrade(tmp_path: Path, github: GitHub[UnauthAuthStrategy]) -> None:
     # FIXME: It uses a real API and should be mocked
-    gpkg.upgrade(prefix=tmp_path, github=github)
+    for _ in gpkg.upgrade(prefix=tmp_path, github=github): ...
